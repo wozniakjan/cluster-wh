@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-wh
+spec:
+  selector:
+    matchLabels:
+      control-plane: cluster-wh
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: cluster-wh
+    spec:
+      containers:
+      - command:
+        - /cluster-wh
+        image: wozniakjan/cluster-wh:latest
+        name: cluster-wh
+        ports:
+        - containerPort: 9443
+          name: validating-hook
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        volumeMounts:
+        - name: admission-webhook-tls
+          mountPath: "/var/run/secrets/webhook"
+          readOnly: true
+      serviceAccountName: cluster-wh
+      volumes:
+      - name: admission-webhook-tls
+        secret:
+          secretName: cluster-wh-admission-webhook-tls

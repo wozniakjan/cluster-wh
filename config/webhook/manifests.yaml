@@ -1,0 +1,30 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: cluster-hack
+  annotations:
+    cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: cluster-wh-webhook
+      namespace: jw-hack-cluster
+      path: /mutate-cluster
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: cluster-wh.kubermatic.k8s.io
+  reinvocationPolicy: Never
+  rules:
+  - apiGroups:
+    - kubermatic.k8s.io
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - clusters
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 30
