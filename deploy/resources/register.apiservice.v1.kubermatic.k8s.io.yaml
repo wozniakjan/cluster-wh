@@ -1,0 +1,13 @@
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1.kubermatic.k8s.io
+spec:
+  group: kubermatic.k8s.io
+  groupPriorityMinimum: 1000
+  insecureSkipTLSVerify: true
+  service:
+    name: dmz-apiserver
+    namespace: default
+  version: v1
+  versionPriority: 100

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    component: dmz-apiserver-etcd
+    tier: control-plane
+  name: dmz-apiserver-etcd
+spec:
+  selector:
+    matchLabels:
+      component: dmz-apiserver-etcd
+      tier: control-plane
+  serviceName: dmz-apiserver-etcd
+  replicas: 3
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        component: dmz-apiserver-etcd
+        tier: control-plane
+    spec:
+      containers:
+      - command:
+        - etcd
+        args:
+        - --advertise-client-urls=https://$(POD_NAME).dmz-apiserver-etcd.$(POD_NAMESPACE).svc:2379
+        - --cert-file=/var/lib/dmz-apiserver/certs/etcd/server.crt
+        - --client-cert-auth=true
+        - --data-dir=/var/lib/dmz-apiserver/data
+        - --initial-advertise-peer-urls=https://$(POD_NAME).dmz-apiserver-etcd.$(POD_NAMESPACE).svc:2380
+        - --initial-cluster=dmz-apiserver-etcd-0=https://dmz-apiserver-etcd-0.dmz-apiserver-etcd.$(POD_NAMESPACE).svc:2380,dmz-apiserver-etcd-1=https://dmz-apiserver-etcd-1.dmz-apiserver-etcd.$(POD_NAMESPACE).svc:2380,dmz-apiserver-etcd-2=https://dmz-apiserver-etcd-2.dmz-apiserver-etcd.$(POD_NAMESPACE).svc:2380
+        - --key-file=/var/lib/dmz-apiserver/certs/etcd/server.key
+        - --listen-client-urls=https://0.0.0.0:2379
+        - --listen-peer-urls=https://0.0.0.0:2380
+        - --name=$(POD_NAME)
+        - --peer-client-cert-auth=true
+        - --peer-auto-tls
+        - --peer-trusted-ca-file=/var/lib/dmz-apiserver/certs/etcd/ca.crt
+        - --snapshot-count=10000
+        - --trusted-ca-file=/var/lib/dmz-apiserver/certs/etcd/ca.crt
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: k8s.gcr.io/etcd:3.3.10
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -ec
+            - ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/var/lib/dmz-apiserver/certs/etcd/ca.crt
+              --cert=/var/lib/dmz-apiserver/certs/etcd/healthcheck-client.crt --key=/var/lib/dmz-apiserver/certs/etcd/healthcheck-client.key
+              get foo
+          failureThreshold: 8
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 15
+        name: etcd
+        volumeMounts:
+        - mountPath: /var/lib/dmz-apiserver/certs/etcd
+          name: etcd-certs
+        - mountPath: /var/lib/dmz-apiserver/data
+          name: data
+      restartPolicy: Always
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/ssl/certs
+          type: DirectoryOrCreate
+        name: ca-certs
+      - secret:
+          secretName: k8s-api-etcd-certs
+        name: etcd-certs
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

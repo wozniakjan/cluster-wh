@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: dmz-apiserver
+    tier: control-plane
+  name: dmz-apiserver-lb
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    component: dmz-apiserver
+    tier: control-plane
+  type: LoadBalancer

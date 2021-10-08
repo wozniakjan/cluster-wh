@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: dmz-apiserver
+    tier: control-plane
+  name: dmz-apiserver-en
+spec:
+  ExternalName: https://35.198.89.109
+  type: ExternalName

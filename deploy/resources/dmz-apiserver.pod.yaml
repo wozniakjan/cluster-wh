@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: dmz-apiserver
+    tier: control-plane
+  name: dmz-apiserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: dmz-apiserver
+      tier: control-plane
+  template:
+    metadata:
+      labels:
+        component: dmz-apiserver
+        tier: control-plane
+    spec:
+      containers:
+      - command:
+        - kube-apiserver
+        - --allow-privileged=false
+        - --authorization-mode=RBAC,ABAC
+        - --anonymous-auth=false
+        - --client-ca-file=/var/lib/dmz-apiserver/certs/client-ca.crt
+        - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota
+        - --enable-bootstrap-token-auth=false
+        - --etcd-cafile=/var/lib/dmz-apiserver/certs/etcd/ca.crt
+        - --etcd-certfile=/var/lib/dmz-apiserver/certs/etcd/apiserver-etcd-client.crt
+        - --etcd-keyfile=/var/lib/dmz-apiserver/certs/etcd/apiserver-etcd-client.key
+        - --etcd-servers=https://dmz-apiserver-etcd:2379
+        - --insecure-port=0
+        - --requestheader-allowed-names=front-proxy-client,aggregator
+        - --requestheader-client-ca-file=/etc/dmz-apiserver/configmaps/extension-apiserver-authentication/requestheader-client-ca-file
+        - --requestheader-extra-headers-prefix=X-Remote-Extra-
+        - --requestheader-group-headers=X-Remote-Group
+        - --requestheader-username-headers=X-Remote-User
+        - --secure-port=8443
+        - --tls-cert-file=/var/lib/dmz-apiserver/certs/apiserver.crt
+        - --tls-private-key-file=/var/lib/dmz-apiserver/certs/apiserver.key
+        - --authorization-policy-file=/etc/dmz-apiserver/configmaps/usercreds/abac.json
+        - --service-account-issuer=jw
+        - --service-account-signing-key-file=/var/lib/dmz-apiserver/certs/apiserver.key
+        - --service-account-key-file=/var/lib/dmz-apiserver/certs/apiserver.key
+        # TODO: try disabling not needed api groups
+        #- --runtime-config=core/v1=false
+        image: k8s.gcr.io/kube-apiserver:v1.21.5
+        imagePullPolicy: IfNotPresent
+        name: kube-apiserver
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: ca-certs
+          readOnly: true
+        - mountPath: /etc/dmz-apiserver/configmaps/usercreds
+          name: user-creds
+          readOnly: true
+        - mountPath: /etc/dmz-apiserver/configmaps/extension-apiserver-authentication
+          name: extension-apiserver-authentication
+          readOnly: true
+        - mountPath: /var/lib/dmz-apiserver/certs/
+          name: k8s-certs
+          readOnly: true
+        - mountPath: /var/lib/dmz-apiserver/certs/etcd
+          name: etcd-certs
+          readOnly: true
+      restartPolicy: Always
+      tolerations:
+      - effect: NoExecute
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/ssl/certs
+          type: DirectoryOrCreate
+        name: ca-certs
+      - secret:
+          secretName: k8s-api-certs
+        name: k8s-certs
+      - secret:
+          secretName: k8s-api-etcd-certs
+        name: etcd-certs
+      - configMap:
+          name: user-creds
+        name: user-creds
+      - configMap:
+          name: extension-apiserver-authentication
+        name: extension-apiserver-authentication
