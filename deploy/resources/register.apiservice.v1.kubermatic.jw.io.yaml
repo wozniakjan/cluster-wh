@@ -1,9 +1,9 @@
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
-  name: v1.kubermatic.k8s.io
+  name: v1.kubermatic.jw.io
 spec:
-  group: kubermatic.k8s.io
+  group: kubermatic.jw.io
   groupPriorityMinimum: 1000
   insecureSkipTLSVerify: true
   service:

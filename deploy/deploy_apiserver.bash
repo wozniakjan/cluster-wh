@@ -148,5 +148,13 @@ kubectl apply -f resources/user-creds.yaml -n $NAMESPACE
 # create service for dmz-apiserver
 kubectl apply -f resources/dmz-apiserver.svc.yaml -n $NAMESPACE
 
+# create apiservice apiregistration
+caBundle=$(cat k8s-api/apiserver.crt | base64 --wrap=0)
+for f in resources/register.apiservice*.yaml; do
+    kubectl apply -f <(cat "$f" | \
+        yq '.spec.service.namespace = "'$NAMESPACE'"' | \
+        yq '.spec.caBundle = "'$caBundle'"' )
+done
+
 # create pod with dmz-apiserver
 kubectl apply -f resources/dmz-apiserver.pod.yaml -n $NAMESPACE
