@@ -20,3 +20,10 @@ docker-build:
 # Push the docker image
 docker-push:
 	docker push ${IMG}
+
+# Generate manifests
+manifests:
+	controller-gen crd paths="./..." output:crd:artifacts:config=deploy/resources/crds
+
+generate:
+	controller-gen object paths="./api/..."
