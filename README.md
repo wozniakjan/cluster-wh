@@ -1,4 +1,4 @@
 cluster-wh
 ===
 
-Mutating webhook for Cluster Create to bypass kubermatic-api
+PoC to expose partial kubermatic CRD base to support alternative end user interaction along with kubermatic-api.
