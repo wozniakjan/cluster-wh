@@ -72,6 +72,7 @@ type ClusterStatus struct{}
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
+// +kubebuilder:resource:scope="Cluster"
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:JSONPath=".spec.cloud.dc", name="DataCenter", type="string"
 // +kubebuilder:printcolumn:JSONPath=".spec.version", name="Version", type="string"
