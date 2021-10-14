@@ -8,7 +8,7 @@ import (
 // ClusterSpec defines the cluster specification
 type ClusterSpec struct {
 	// kubermatic spec
-	Cloud kubermaticv1.ClusterSpec `json:",inline"`
+	kubermaticv1.ClusterSpec `json:",inline"`
 }
 
 // ClusterStatus defines the observed state

@@ -6,8 +6,10 @@ WORKDIR /workspace
 COPY go.mod go.mod
 COPY go.sum go.sum
 COPY main.go main.go
+COPY apihack.go apihack.go
+COPY api/ api/
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o cluster-wh main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o cluster-wh main.go apihack.go
 
 FROM gcr.io/distroless/static:nonroot 
 WORKDIR /
