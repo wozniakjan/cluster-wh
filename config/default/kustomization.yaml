@@ -1,4 +1,4 @@
-namespace: jw-hack-cluster
+namespace: jw-api-test
 
 commonLabels:
   control-plane: cluster-wh
