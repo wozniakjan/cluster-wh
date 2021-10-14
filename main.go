@@ -7,20 +7,27 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
 	"gomodules.xyz/jsonpatch/v2"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 
-	v1 "k8c.io/kubermatic/v2/pkg/crd/kubermatic/v1"
+	kubermatic "k8c.io/kubermatic/v2/pkg/crd/client/clientset/versioned/typed/kubermatic/v1"
+
+	dmzv1 "github.com/wozniakjan/cluster-wh/api"
 	admv1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type checkFn func(ar *admv1.AdmissionReview) error
 type server struct {
-	sv *http.Server
+	sv               *http.Server
+	kubermaticClient *kubermatic.KubermaticV1Client
+	kubeClient       *kubernetes.Clientset
 }
 
 var (
@@ -68,13 +75,15 @@ func getPatch(old, updated *admv1.AdmissionReview) ([]byte, *admv1.PatchType, er
 func (s *server) mutateCluster(ar *admv1.AdmissionReview) error {
 	klog.Infof("defaulting cluster, request %v/%v", ar.Request.Namespace, ar.Request.Name)
 
-	cluster := &v1.Cluster{}
+	cluster := &dmzv1.DMZCluster{}
 	if err := json.Unmarshal(ar.Request.Object.Raw, cluster); err != nil {
 		klog.Errorf("failed to unmarshal request %v/%v to cluster: %v", ar.Request.Namespace, ar.Request.Name, err)
 		return fmt.Errorf("failed to parse request raw object")
 	}
 
-	//TODO: code here
+	if err := s.proxyCluster(cluster); err != nil {
+		return err
+	}
 
 	var err error
 	if ar.Request.Object.Raw, err = json.Marshal(cluster); err != nil {
@@ -178,6 +187,18 @@ func newServer() *server {
 
 	router.HandleFunc("/mutate-cluster", s.mutateClusterHandler)
 
+	cfg, err := clientcmd.BuildConfigFromFlags("", os.Getenv("KUBECONFIG"))
+	if err != nil {
+		panic(err.Error())
+	}
+	s.kubermaticClient, err = kubermatic.NewForConfig(cfg)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.kubeClient, err = kubernetes.NewForConfig(cfg)
+	if err != nil {
+		panic(err.Error())
+	}
 	s.sv.Handler = router
 	return s
 }
