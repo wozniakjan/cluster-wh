@@ -1,7 +1,7 @@
 // Package v1 contains API Schema definitions
 // +kubebuilder:object:generate=true
 // +groupName=kubermatic.jw.io
-package v1
+package api
 
 import (
 	"k8s.io/apimachinery/pkg/runtime/schema"

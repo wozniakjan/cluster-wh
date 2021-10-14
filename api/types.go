@@ -1,4 +1,4 @@
-package v1
+package api
 
 import (
 	kubermaticv1 "k8c.io/kubermatic/v2/pkg/crd/kubermatic/v1"
