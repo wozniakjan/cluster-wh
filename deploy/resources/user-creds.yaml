@@ -3,7 +3,7 @@ data:
   abac.json: |
     {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "cluster-admin", "namespace": "*", "resource": "*", "apiGroup": "*"}}
     {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "cluster-read", "namespace": "*", "resource": "*", "apiGroup": "*", "readonly": true}}
-    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "jan@kubermatic.com", "namespace": "*", "resource": "*", "apiGroup": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "*", "namespace": "*", "resource": "*", "apiGroup": "*"}}
 kind: ConfigMap
 metadata:
   name: user-creds

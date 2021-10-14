@@ -6,8 +6,10 @@ metadata:
 rules:
 - apiGroups:
   - "kubermatic.k8s.io"
+  - "kubermatic.jw.io"
   resources:
   - clusters
+  - dmzclusters
   verbs:
   - get
   - list

@@ -14,17 +14,17 @@ webhooks:
       path: /mutate-cluster
   failurePolicy: Fail
   matchPolicy: Equivalent
-  name: cluster-wh.kubermatic.k8s.io
+  name: cluster-wh.kubermatic.jw.io
   reinvocationPolicy: Never
   rules:
   - apiGroups:
-    - kubermatic.k8s.io
+    - kubermatic.jw.io
     apiVersions:
     - v1
     operations:
     - CREATE
     resources:
-    - clusters
+    - dmzclusters
     scope: '*'
   sideEffects: None
   timeoutSeconds: 30
