@@ -4,10 +4,10 @@ metadata:
   name: v1.kubermatic.jw.io
 spec:
   group: kubermatic.jw.io
-  groupPriorityMinimum: 1000
-  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 1
+  insecureSkipTLSVerify: false
   service:
     name: dmz-apiserver
-    namespace: default
+    namespace: jw-api-test
   version: v1
-  versionPriority: 100
+  versionPriority: 1

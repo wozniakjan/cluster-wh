@@ -6,14 +6,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
   creationTimestamp: null
-  name: clusters.kubermatic.jw.io
+  name: dmzclusters.kubermatic.jw.io
 spec:
   group: kubermatic.jw.io
   names:
-    kind: Cluster
-    listKind: ClusterList
-    plural: clusters
-    singular: cluster
+    kind: DMZCluster
+    listKind: DMZClusterList
+    plural: dmzclusters
+    singular: dmzcluster
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -41,7 +41,7 @@ spec:
     name: v1
     schema:
       openAPIV3Schema:
-        description: Cluster is the Schema for the cluster DMZ API
+        description: DMZCluster is the Schema for the cluster DMZ API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

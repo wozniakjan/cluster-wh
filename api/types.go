@@ -80,8 +80,8 @@ type ClusterStatus struct{}
 // +kubebuilder:printcolumn:JSONPath=".spec.cniPlugin.type", name="CNI", type="string", priority=1
 // +kubebuilder:printcolumn:JSONPath=".metadata.creationTimestamp",name="Age",type="date",description="CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC."
 
-// Cluster is the Schema for the cluster DMZ API
-type Cluster struct {
+// DMZCluster is the Schema for the cluster DMZ API
+type DMZCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
@@ -92,13 +92,13 @@ type Cluster struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ClusterList contains a list of Clusters
-type ClusterList struct {
+// DMZClusterList contains a list of Clusters
+type DMZClusterList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Cluster `json:"items"`
+	Items           []DMZCluster `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Cluster{}, &ClusterList{})
+	SchemeBuilder.Register(&DMZCluster{}, &DMZClusterList{})
 }
