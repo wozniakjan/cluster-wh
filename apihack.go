@@ -20,7 +20,7 @@ func (s *server) proxyCluster(c *dmzv1.DMZCluster) error {
 		c.Labels = make(map[string]string)
 	}
 	c.Annotations["kubermatic.io/aws-region"] = "eu-central-1"
-	c.Labels["project-id"] = "testjw"
+	c.Labels["project-id"] = "gthc4b8ph8"
 	c.Spec.ExposeStrategy = kubermaticv1.ExposeStrategyTunneling
 	c.Spec.HumanReadableName = c.Name
 	c.Spec.Cloud.AWS = &kubermaticv1.AWSCloudSpec{

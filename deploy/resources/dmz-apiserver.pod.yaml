@@ -43,8 +43,8 @@ spec:
         - --service-account-issuer=jw
         - --service-account-signing-key-file=/var/lib/dmz-apiserver/certs/apiserver.key
         - --service-account-key-file=/var/lib/dmz-apiserver/certs/apiserver.key
-        # TODO: try disabling not needed api groups
-        #- --runtime-config=core/v1=false
+        # NOTE: disabling api groups
+        - --runtime-config=apps/v1=false
         image: k8s.gcr.io/kube-apiserver:v1.21.5
         imagePullPolicy: IfNotPresent
         name: kube-apiserver
